@@ -179,17 +179,6 @@ namespace P_Secu
 
 
         
-        public string DecryptPasswordOrLogin(string passwordOrLoginEncrypted, string masterPassword)
-        {
-            //Stocke chaque code Ascii de chaque lettre du mot de passe encrypté
-            byte[] passwordOrLoginEncryptedInBytes = Encoding.ASCII.GetBytes(passwordOrLoginEncrypted);
-
-            //Chaine de caractère pour stocker le "mot de passe transformé"
-            string keyOnPassword;
-
-            //Crée une chaine de caractère de la même 
-
-        }
 
     }
 }

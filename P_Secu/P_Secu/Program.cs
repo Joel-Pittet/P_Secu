@@ -12,6 +12,9 @@ namespace P_Secu
     {
         static void Main(string[] args)
         {
+            //Total des caractère dans la table ASCII étendue
+            const int _TOTAL_CHAR_ANSI = 256;
+
             //Chemin du fichier texte qui stocke les mots de passes
             string path = @"c:\Temp\Password.txt";
 
@@ -197,10 +200,10 @@ namespace P_Secu
                         int passwordLineInFile = passwordInFile * 4;
 
                         //Décrypte le login et le stocke
-                        string loginDecrypted = DecryptPasswordOrLogin(fileLinesInList[passwordLineInFile - 2]);
+                        string loginDecrypted = DecryptPasswordOrLogin(fileLinesInList[passwordLineInFile - 2], masterPassword);
 
                         //Décrypte le mot de passe et le stocke
-                        string passwordDecrypted = DecryptPasswordOrLogin(fileLinesInList[passwordLineInFile - 1]);
+                        string passwordDecrypted = DecryptPasswordOrLogin(fileLinesInList[passwordLineInFile - 1], masterPassword);
 
                         //Affiche le mot de passe souhaité
                         Console.WriteLine($"URL: {fileLinesInList[passwordLineInFile - 3]}");
@@ -367,6 +370,98 @@ namespace P_Secu
 
             }
 
+            #region Déchiffrement
+
+            /// <summary>
+            /// Décode le mot de passe ou le login encodé
+            /// </summary>
+            /// <param name="passwordOrLoginEncrypted"></param>
+            /// <param name="masterPassword"></param>
+            /// <returns></returns>
+            string DecryptPasswordOrLogin(string passwordOrLoginEncrypted, string masterkeyPassword)
+            {
+                //Crée une chaine de caractère de la taille du mot de passe encrypté avec la clef 
+                string keySizeOfPasswordOrLogin = TransformDecryptedPassword(passwordOrLoginEncrypted, masterkeyPassword);
+
+                //Décrypte le mot de passe ou login
+                string finalPasswordOrLoginDecrypted = DecryptEncryptedPasswordVigenere(passwordOrLoginEncrypted, keySizeOfPasswordOrLogin);
+
+                //Retourne le login ou mot de passe décrypté
+                return finalPasswordOrLoginDecrypted;
+            }
+
+            /// <summary>
+            /// Crée un chaine de caractère de la taille du mot de passe encrypté
+            /// </summary>
+            /// <param name="passwordOrLoginEncrypted"></param>
+            /// <param name="masterPassword"></param>
+            /// <returns></returns>
+            string TransformDecryptedPassword(string passwordOrLoginEncrypted, string masterkeyPassword)
+            {
+                //Chaine de caractère pour stocker le "mot de passe transformé"
+                string keyOnPassword = "";
+
+                //Compteur au cas ou la clef est plus petite que le mot de passe
+                //Pour que le compte reprenne à zero
+                int keyCountToZero = 0;
+
+                //Crée une chaine de caractère de la même longueur que le mot de passe avec la clef
+                for (int i = 0; i < passwordOrLoginEncrypted.Length; i++)
+                {
+                    //Si le compteur pour la clef dépasse le dernier index du tableau
+                    //Remet l'index du compteur à zero, pour recommencer la transformation depuis le début du mot
+                    if (keyCountToZero == masterkeyPassword.Length)
+                    {
+                        keyCountToZero = 0;
+                    }
+
+                    //Ajoute la lettre de la clef à la chaine de caractère
+                    keyOnPassword += masterkeyPassword[keyCountToZero];
+
+                    //Incrémente le compteur pour la clef
+                    keyCountToZero++;
+                }
+
+                return keyOnPassword;
+            }
+
+            /// <summary>
+            /// Décrypte le login ou le mot de passe encrypté
+            /// </summary>
+            /// <param name="passwordOrLoginEncrypted"></param>
+            /// <param name="keySizeOfPasswordOrLogin"></param>
+            /// <returns></returns>
+            string DecryptEncryptedPasswordVigenere(string passwordOrLoginEncrypted, string keySizeOfPasswordOrLogin)
+            {
+                //Tableau pour stocker le code ASCII de chaque lettre du mot de passe encrypté
+                int[] asciiCodeEveryChar = new int[passwordOrLoginEncrypted.Length];
+
+                //Stocke chaque code Ascii du mot de passe encrypté
+                for (int i = 0; i < passwordOrLoginEncrypted.Length; i++)
+                {
+                    asciiCodeEveryChar[i] = Convert.ToByte(passwordOrLoginEncrypted[i]);
+                }
+
+                //Stocke chaque code Ascii de chaque lettre de la chaine de caractère faite avec la clef
+                byte[] keySizeOfPasswordOrLoginInBytes = Encoding.ASCII.GetBytes(keySizeOfPasswordOrLogin);
+
+                //Mot de passe ou login final décrypté
+                string passwordOrLoginDecrypted = "";
+
+                //Parcourt chaque code ascii du tableau du mot de passe ou login encrypté et soustrait la clef au mot de passe ou login encrypté
+                for (int i = 0; i < passwordOrLoginEncrypted.Length; i++)
+                {
+                    //Récupère le code ascii de la lettre déchiffrée
+                    int letterDecryptedInAscii = (asciiCodeEveryChar[i] - keySizeOfPasswordOrLoginInBytes[i]) % _TOTAL_CHAR_ANSI;
+
+                    //Converti le code ASCII en lettre et l'ajoute au mot de passe ou login final décrypté
+                    passwordOrLoginDecrypted += Convert.ToChar(letterDecryptedInAscii);
+                }
+
+                return passwordOrLoginDecrypted;
+
+            }
+
             //Code césar Déchiffrement
             #region Codage CÉSAR
             /*
@@ -382,6 +477,8 @@ namespace P_Secu
                 //Ajoute chaque lettre pour obtenir le mot de passe codé
                 restauredPasswordOrLogin += letterRestaured;
             }*/
+
+            #endregion
 
             #endregion
 
