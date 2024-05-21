@@ -276,10 +276,10 @@ namespace P_Secu
                     Password newPassword = new Password(passwordName: passwordName, url: url, login: login, password: password);
 
                     //Encrypte le login
-                    string finalLoginEncrypted = newPassword.EncryptLogin();
+                    string finalLoginEncrypted = newPassword.EncryptLogin(masterPassword);
 
                     //Encrypte le mot de passe
-                    string finalPasswordEncrypted = newPassword.EncryptPassword();
+                    string finalPasswordEncrypted = newPassword.EncryptPassword(masterPassword);
 
                     //Permet d'écrire dans un fichier sans écraser les données précédentes
                     StreamWriter writeSiteDotTxt = File.AppendText(path);
@@ -292,9 +292,6 @@ namespace P_Secu
 
                     //Ferme le fichier
                     writeSiteDotTxt.Close();
-
-                    //Ajoute le mot de passe à la liste des mots de passe
-                    //passwordList.Add(newPassword);
 
                     //Message de confirmation pour l'utilisateur
                     Console.WriteLine("\nVous avez entré un nouveau mot de passe avec succès.");
@@ -370,38 +367,30 @@ namespace P_Secu
 
             }
 
-            //Decrypte le mot de passe et le login
-            string DecryptPasswordOrLogin(string passwordOrLogin)
+            //Code césar Déchiffrement
+            #region Codage CÉSAR
+            /*
+            //Parcourt toutes les lettres du mot de passe pour les déchiffrer
+            foreach (byte letterInAscii in tabSplitedPassword)
             {
-                //Instancie un tableau pour stocker les lettres du mot de passe
-                byte[] tabSplitedPassword = Encoding.ASCII.GetBytes(passwordOrLogin);
+                //Change le numéro ASCII de la lettre en la décalant de 2
+                int letterRestauredInAscii = letterInAscii - 2;
 
-                //Mot de passe final restauré
-                string restauredPasswordOrLogin = "";
+                //Récupère la lettre décryptée
+                char letterRestaured = Convert.ToChar(letterRestauredInAscii);
 
-                //Parcourt toutes les lettres du mot de passe pour les déchiffrer
-                foreach (byte letterInAscii in tabSplitedPassword)
-                {
-                    //Change le numéro ASCII de la lettre en la décalant de 2
-                    int letterRestauredInAscii = letterInAscii - 2;
+                //Ajoute chaque lettre pour obtenir le mot de passe codé
+                restauredPasswordOrLogin += letterRestaured;
+            }*/
 
-                    //Récupère la lettre décryptée
-                    char letterRestaured = Convert.ToChar(letterRestauredInAscii);
-
-                    //Ajoute chaque lettre pour obtenir le mot de passe codé
-                    restauredPasswordOrLogin += letterRestaured;
-                }
-
-
-                return restauredPasswordOrLogin;
-            }
+            #endregion
 
             //Permet de quitter l'application
             void ExitApplication()
             {
                 Console.Clear();
                 Console.WriteLine("Appuyer sur une touche pour fermer le programme");
-                Console.ReadKey();
+                Console.ReadLine();
                 
             }
         }

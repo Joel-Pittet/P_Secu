@@ -50,6 +50,15 @@ namespace P_Secu
         /// </summary>
         private string _password = " ";
 
+        /// <summary>
+        /// Nombre de caractère dans la table ASCII étendue
+        /// </summary>
+        private const int _NB_CHAR_IN_ANSI = 256;
+
+        /// <summary>
+        /// Mise à zéro du compteur
+        /// </summary>
+        private const int _COUNT_LIMIT = 0;
 
         /// <summary>
         /// Constructeur
@@ -69,61 +78,118 @@ namespace P_Secu
         /// <summary>
         /// Encode le mot de passe
         /// </summary>
-        public string EncryptPassword()
+        public string EncryptPassword(string masterPassword)
         {
-            //Instancie un tableau pour stocker les lettres du mot de passe
+            //Transforme le mot de passe avec la clef
+            string passwordTransformed = TransformPasswordOrLoginWithKey(_password, masterPassword);
+
+            //Instancie un tableau pour stocker chaque code ASCII de chaque lettre du mot de passe
             byte[] tabSplitedPassword = Encoding.ASCII.GetBytes(_password);
 
-            //Mot de passe final encrypté
-            string encryptedPassword = "";
+            //Encrypte le mot de passe avec Vigenere et récupère le résultat
+            string finalPasswordEncryptedWithVigenere = EncryptPasswordorLoginVigenere(passwordTransformed, tabSplitedPassword);
 
-            //Parcourt toutes les lettres du mot de passe pour les chiffrer
-            foreach (byte letterInAscii in tabSplitedPassword)
-            {
-                //Change le numéro ASCII de la lettre en la décalant de 2
-                int letterEncryptedInAscii = letterInAscii + 2;
-
-                //Récupère la lettre encryptée
-                char letterEncrypted = Convert.ToChar(letterEncryptedInAscii);
-
-                //Ajoute chaque lettre pour obtenir le mot de passe codé
-                encryptedPassword += letterEncrypted;
-            }
-
-
-            return encryptedPassword;
+            //Retourne le mot de passe final encrypté
+            return finalPasswordEncryptedWithVigenere;
 
         }
 
         /// <summary>
-        /// Encode le login
+        /// Encode le Login
         /// </summary>
-        public string EncryptLogin()
+        /// <param name="masterPassword"></param>
+        /// <returns></returns>
+        public string EncryptLogin(string masterPassword)
         {
-            //Instancie un tableau pour stocker les lettres du login
+            //Transforme le login avec la clef
+            string loginTransformed = TransformPasswordOrLoginWithKey(_login, masterPassword);
+
+            //Instancie un tableau pour stocker chaque code ASCII de chaque lettre du login
             byte[] tabSplitedLogin = Encoding.ASCII.GetBytes(_login);
 
-            //Login final encrypté
-            string encryptedLogin = "";
+            //Encrypte le login avec Vigenere et récupère le résultat
+            string finalLoginEncryptedWithVigenere = EncryptPasswordorLoginVigenere(loginTransformed, tabSplitedLogin);
 
-            //Parcourt toutes les lettres du mot de passe pour les chiffrer
-            foreach (byte letterInAscii in tabSplitedLogin)
-            {
-                //Change le numéro ASCII de la lettre en la décalant de 2
-                int letterEncryptedInAscii = letterInAscii + 2;
-
-                //Récupère la lettre encryptée
-                char letterEncrypted = Convert.ToChar(letterEncryptedInAscii);
-
-                //Ajoute chaque lettre pour obtenir le mot de passe codé
-                encryptedLogin += letterEncrypted;
-            }
-
-
-            return encryptedLogin;
-
+            //Retourne le login final encrypté
+            return finalLoginEncryptedWithVigenere;
         }
 
+        /// <summary>
+        /// Transforme le mot de passe avec les lettres de la clef
+        /// </summary>
+        /// <param name="passwordOrLogin"></param>
+        /// <param name="masterPassword"></param>
+        /// <returns></returns>
+        public string TransformPasswordOrLoginWithKey(string passwordOrLogin, string masterPassword)
+        {
+            //Mot de passe transformé en lettre
+            string passwordOrLoginWithKey = "";
+
+            //Compteur au cas ou la clef est plus petite que le mot de passe
+            //Pour que le compte reprenne à zero
+            int keyCountToZero = 0;
+
+            //Parcourt le mot de passe et remplace une a une les lettres
+            for (int i = 0; i < passwordOrLogin.Length; i++)
+            {
+                //Si le compteur pour la clef dépasse le dernier index du tableau
+                //Remet l'index du compteur à zero, pour recommencer la transformation depuis le début du mot
+                if (keyCountToZero == masterPassword.Length)
+                {
+                    keyCountToZero = _COUNT_LIMIT;
+                }
+
+                //Ajoute la lettre transformée par la clef dans le mot de passe transformé par la clef
+                passwordOrLoginWithKey += masterPassword[keyCountToZero];
+
+                //Incrémente le compteur pour la clef
+                keyCountToZero++;
+            }
+
+            return passwordOrLoginWithKey;
+        }
+
+        /// <summary>
+        /// Encrypte le mot de passe
+        /// </summary>
+        /// <param name="passwordOrLoginTransformed"></param>
+        /// <param name="tabSplitedPasswordOrLogin"></param>
+        /// <returns></returns>
+        public string EncryptPasswordorLoginVigenere(string passwordOrLoginTransformed, byte[] tabSplitedPasswordOrLogin)
+        {
+            //Traduit le mot de passe ou le Login transformé en code ASCII
+            byte[] passwordOrLoginTransformedInAscii = Encoding.ASCII.GetBytes(passwordOrLoginTransformed);
+
+            //Mot de passe ou login final encrypté
+            string finalEncryptedPasswordOrLogin = "";
+
+            //Encrypte chaque lettre avec le code de Vigenère
+            for (int i = 0; i < passwordOrLoginTransformed.Length; i++)
+            {
+                //Additionne le code ascii de la lettre du mot de passe ou celle du login et
+                //du mot de passe ou login transformé de chaque lettre une a une
+                int letterEncryptedInAscii = (passwordOrLoginTransformedInAscii[i] + tabSplitedPasswordOrLogin[i]) % _NB_CHAR_IN_ANSI;
+
+                //Converti le code ASCII en lettre et l'ajoute au mot de passe ou login final encrypté
+                finalEncryptedPasswordOrLogin += Convert.ToChar(letterEncryptedInAscii);
+            }
+
+            return finalEncryptedPasswordOrLogin;
+        }
+
+
+        
+        public string DecryptPasswordOrLogin(string passwordOrLoginEncrypted, string masterPassword)
+        {
+            //Stocke chaque code Ascii de chaque lettre du mot de passe encrypté
+            byte[] passwordOrLoginEncryptedInBytes = Encoding.ASCII.GetBytes(passwordOrLoginEncrypted);
+
+            //Chaine de caractère pour stocker le "mot de passe transformé"
+            string keyOnPassword;
+
+            //Crée une chaine de caractère de la même 
+
+        }
 
     }
 }
