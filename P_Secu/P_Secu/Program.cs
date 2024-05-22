@@ -140,84 +140,83 @@ namespace P_Secu
                 optionsShowPassword.Add("Retour au menu principal");
 
                 //Ouvre un lecteur pour lire le fichier txt
-                using (StreamReader readPassword = new StreamReader(path))
+                StreamReader readPassword = new StreamReader(path);
+                
+                //Liste pour pouvoir gérer les lignes lues
+                List<string> fileLinesInList = new List<string>();
+
+                //crée une variable qui va stocker la ligne à lire
+                string line;
+
+                //Pour chaque ligne pleine dans le fichier
+                while ((line = readPassword.ReadLine()) != null)
                 {
-                    //Liste pour pouvoir gérer les lignes lues
-                    List<string> fileLinesInList = new List<string>();
+                    fileLinesInList.Add(line);
+                }
 
-                    //crée une variable qui va stocker la ligne à lire
-                    string line;
-
-                    //Pour chaque ligne pleine dans le fichier
-                    while ((line = readPassword.ReadLine()) != null)
+                //Parcourt les lignes enregistrées
+                for (int i = 0; i < fileLinesInList.Count; i++)
+                {
+                    //La ligne toutes les 4 lignes est le nom d'un nouveau site
+                    if (i % 4 == 0)
                     {
-                        fileLinesInList.Add(line);
-                    }
+                        //Ajoute le nom de chque site à la liste d'option du sous-menu
+                        optionsShowPassword.Add(fileLinesInList[i]);
 
-                    //Parcourt les lignes enregistrées
-                    for (int i = 0; i < fileLinesInList.Count; i++)
-                    {
-                        //La ligne toutes les 4 lignes est le nom d'un nouveau site
-                        if (i % 4 == 0)
-                        {
-                            //Ajoute le nom de chque site à la liste d'option du sous-menu
-                            optionsShowPassword.Add(fileLinesInList[i]);
-
-                        }
                     }
+                }
                    
-                    //Crée un nouveau menu avec la liste des noms de mots de passes
-                    Menu showPasswordMenu = new Menu(title: "Consulter un mot de passe:", optionList: optionsShowPassword);
+                //Crée un nouveau menu avec la liste des noms de mots de passes
+                Menu showPasswordMenu = new Menu(title: "Consulter un mot de passe:", optionList: optionsShowPassword);
 
-                    //Affiche le menu
-                    showPasswordMenu.ShowMenu();
+                //Affiche le menu
+                showPasswordMenu.ShowMenu();
 
-                    //Demande le choix de l'utilisateur
-                    Console.Write("Votre choix: ");
+                //Demande le choix de l'utilisateur
+                Console.Write("Votre choix: ");
 
-                    //Récupère le choix de l'utilisateur
-                    selectedOption = Convert.ToInt32(Console.ReadLine());
+                //Récupère le choix de l'utilisateur
+                selectedOption = Convert.ToInt32(Console.ReadLine());
 
-                    //Première ligne du site dans le fichier
-                    int passwordInFile = selectedOption - 1;
+                //Première ligne du site dans le fichier
+                int passwordInFile = selectedOption - 1;
 
-                    //Réaffiche le menu principal sinon affiche le site demandé
-                    if(selectedOption == 1)
-                    {
-                        //Efface la console
-                        Console.Clear();
-
-                        //Ferme le fichier
-                        readPassword.Close();
-
-                        //Affiche le menu principal
-                        DrawMenu();
-                    }
-                    else
-                    {
-                        //Retrouve la dernière ligne du site dans le fichier
-                        //Cette ligne correspond au mot de passe du site
-                        int passwordLineInFile = passwordInFile * 4;
-
-                        //Décrypte le login et le stocke
-                        string loginDecrypted = DecryptPasswordOrLogin(fileLinesInList[passwordLineInFile - 2], masterPassword);
-
-                        //Décrypte le mot de passe et le stocke
-                        string passwordDecrypted = DecryptPasswordOrLogin(fileLinesInList[passwordLineInFile - 1], masterPassword);
-
-                        //Affiche le mot de passe souhaité
-                        Console.WriteLine($"URL: {fileLinesInList[passwordLineInFile - 3]}");
-                        Console.WriteLine($"Login: {loginDecrypted}");
-                        Console.WriteLine($"Mot de passe: {passwordDecrypted}");
-                        
-                    }
-
-                    Console.WriteLine("Appuyer sur une touche pour masquer le mot de passe et revenir au menu principal");
-                    Console.ReadLine();
+                //Réaffiche le menu principal sinon affiche le site demandé
+                if(selectedOption == 1)
+                {
+                    //Efface la console
+                    Console.Clear();
 
                     //Ferme le fichier
                     readPassword.Close();
-                };
+
+                    //Affiche le menu principal
+                    DrawMenu();
+                }
+                else
+                {
+                    //Retrouve la dernière ligne du site dans le fichier
+                    //Cette ligne correspond au mot de passe du site
+                    int passwordLineInFile = passwordInFile * 4;
+
+                    //Décrypte le login et le stocke
+                    string loginDecrypted = DecryptPasswordOrLogin(fileLinesInList[passwordLineInFile - 2], masterPassword);
+
+                    //Décrypte le mot de passe et le stocke
+                    string passwordDecrypted = DecryptPasswordOrLogin(fileLinesInList[passwordLineInFile - 1], masterPassword);
+
+                    //Affiche le mot de passe souhaité
+                    Console.WriteLine($"URL: {fileLinesInList[passwordLineInFile - 3]}");
+                    Console.WriteLine($"Login: {loginDecrypted}");
+                    Console.WriteLine($"Mot de passe: {passwordDecrypted}");
+                        
+                }
+
+                Console.WriteLine("Appuyer sur une touche pour masquer le mot de passe et revenir au menu principal");
+                Console.ReadLine();
+
+                //Ferme le fichier
+                readPassword.Close();
 
                 //Affiche le menu principal
                 DrawMenu();
@@ -308,7 +307,152 @@ namespace P_Secu
             //Permet de mettre à jour le mot de passe ou l'identifiant d'un mot de passe déja existant
             void UpdatePassword()
             {
+                //Efface la console
+                Console.Clear();
 
+                //Stocke les noms des mots de passes
+                List<string> optionsUpdatePassword = new List<string>();
+
+                //Ajoute l'option de retour au menu principal
+                optionsUpdatePassword.Add("Retour au menu principal");
+
+                //Ouvre un lecteur pour lire le fichier txt
+                StreamReader readPassword = new StreamReader(path);
+
+                //Liste pour pouvoir gérer les lignes lues
+                List<string> fileLinesInList = new List<string>();
+
+                //crée une variable qui va stocker la ligne à lire
+                string line;
+
+                //Pour chaque ligne pleine dans le fichier
+                while ((line = readPassword.ReadLine()) != null)
+                {
+                    fileLinesInList.Add(line);
+                }
+
+                //Ferme le fichier
+                readPassword.Close();
+
+                //Parcourt les lignes enregistrées
+                for (int i = 0; i < fileLinesInList.Count; i++)
+                {
+                    //La ligne toutes les 4 lignes est le nom d'un nouveau site
+                    if (i % 4 == 0)
+                    {
+                        //Ajoute le nom de chque site à la liste d'option du sous-menu
+                        optionsUpdatePassword.Add(fileLinesInList[i]);
+
+                    }
+                }
+
+                //Crée un nouveau menu avec la liste des noms de mots de passes
+                Menu updatePasswordMenu = new Menu(title: "Consulter un mot de passe:", optionList: optionsUpdatePassword);
+
+                //Affiche le menu
+                updatePasswordMenu.ShowMenu();
+
+                //Demande le choix de l'utilisateur
+                Console.Write("Votre choix: ");
+
+                //Récupère le choix de l'utilisateur
+                selectedOption = Convert.ToInt32(Console.ReadLine());
+
+                //Première ligne du site dans le fichier
+                int passwordInFile = selectedOption - 1;
+
+                //Réaffiche le menu principal sinon affiche le site demandé
+                if (selectedOption == 1)
+                {
+                    //Efface la console
+                    Console.Clear();
+
+                    //Affiche le menu principal
+                    DrawMenu();
+                }
+                else
+                {
+                    //Retrouve la dernière ligne du site dans le fichier
+                    //Cette ligne correspond au mot de passe du site
+                    int passwordLineInFile = passwordInFile * 4;
+
+                    //Demande quelle aspect du mot de passe l'utilisateur souhaite changer
+                    Console.WriteLine("Que souhaitez vous changer ?");
+
+                    //Affiche les 3 possibilités
+                    Console.WriteLine("1) URL");
+                    Console.WriteLine("2) Login");
+                    Console.WriteLine("3) Mot de passe");
+
+                    //récupère le choix de l'utilisateur
+                    int aspectToUpdate = Convert.ToInt32(Console.ReadLine());
+
+                    //Efface la console
+                    Console.Clear();
+
+                    switch (aspectToUpdate)
+                    {
+                        case 1:
+                            //Affiche l'ur actuel
+                            Console.WriteLine($"URL actuel: {fileLinesInList[passwordLineInFile - 3]}");
+
+                            //demande et récupère le nouvel URL
+                            Console.Write("Nouvel URL: ");
+                            string newURL = Console.ReadLine();
+
+                            //change dans la liste l'ancien Url par le nouveau
+                            fileLinesInList[passwordLineInFile - 3] = newURL;
+
+                            //Pour écrire dans le fichier
+                            StreamWriter updateLine = new StreamWriter(path);
+
+                            //Ecrit toutes les lignes dans le fichier dont la ligne mise à jour
+                            foreach (string fileLine in fileLinesInList)
+                            {
+                                updateLine.WriteLine(fileLine);
+                            }
+
+                            //Ferme le fichier
+                            updateLine.Close();
+
+                            break;
+                        case 2:
+                            break;
+                        case 3:
+                            break;
+                        default:
+                            break;
+                    }
+
+
+
+
+
+
+                    /*
+                    //Décrypte le login et le stocke
+                    string loginDecrypted = DecryptPasswordOrLogin(fileLinesInList[passwordLineInFile - 2], masterPassword);
+
+                    //Décrypte le mot de passe et le stocke
+                    string passwordDecrypted = DecryptPasswordOrLogin(fileLinesInList[passwordLineInFile - 1], masterPassword);
+
+                    //Affiche le mot de passe souhaité
+                    Console.WriteLine($"URL: {fileLinesInList[passwordLineInFile - 3]}");
+                    Console.WriteLine($"Login: {loginDecrypted}");
+                    Console.WriteLine($"Mot de passe: {passwordDecrypted}");*/
+
+                }
+                Console.WriteLine("Appuyer sur une touche pour masquer le mot de passe et revenir au menu principal");
+                Console.ReadLine();
+
+                //Affiche le menu principal
+                DrawMenu();
+            }
+
+            //Encrypte le nouveau mot de passe ou login que l'utilisateur souhaite changer
+            string encryptWithVigenere(string wordToEncrypt)
+            {
+                return "";
             }
 
             //Permet de supprimer un mot de passe
@@ -488,7 +632,6 @@ namespace P_Secu
                 Console.Clear();
                 Console.WriteLine("Appuyer sur une touche pour fermer le programme");
                 Console.ReadLine();
-                
             }
         }
     }

@@ -177,8 +177,5 @@ namespace P_Secu
             return finalEncryptedPasswordOrLogin;
         }
 
-
-        
-
     }
 }
