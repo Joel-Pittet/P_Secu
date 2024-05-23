@@ -404,30 +404,74 @@ namespace P_Secu
                             fileLinesInList[passwordLineInFile - 3] = newURL;
 
                             //Pour écrire dans le fichier
-                            StreamWriter updateLine = new StreamWriter(path);
+                            StreamWriter updateLineUrl = new StreamWriter(path);
 
                             //Ecrit toutes les lignes dans le fichier dont la ligne mise à jour
                             foreach (string fileLine in fileLinesInList)
                             {
-                                updateLine.WriteLine(fileLine);
+                                updateLineUrl.WriteLine(fileLine);
                             }
 
                             //Ferme le fichier
-                            updateLine.Close();
-
+                            updateLineUrl.Close();
                             break;
                         case 2:
+
+                            //Affiche le login actuel
+                            Console.WriteLine($"Login actuel: {DecryptPasswordOrLogin(fileLinesInList[passwordLineInFile - 2], masterPassword)}");
+
+                            //demande et récupère le nouveau login
+                            Console.Write("Nouveau login: ");
+                            string newLogin = Console.ReadLine();
+
+                            //Encrypte le login
+                            string loginEncrypted = encryptWithVigenere(newLogin);
+
+                            //change dans la liste l'ancien login par le nouveau
+                            fileLinesInList[passwordLineInFile - 2] = loginEncrypted;
+
+                            //Pour écrire dans le fichier
+                            StreamWriter updateLineLogin = new StreamWriter(path);
+
+                            //Ecrit toutes les lignes dans le fichier dont la ligne mise à jour
+                            foreach (string fileLine in fileLinesInList)
+                            {
+                                updateLineLogin.WriteLine(fileLine);
+                            }
+
+                            //Ferme le fichier
+                            updateLineLogin.Close();
+
                             break;
                         case 3:
+                            //Affiche le mot de passe actuel
+                            Console.WriteLine($"Mot de passe actuel: {DecryptPasswordOrLogin(fileLinesInList[passwordLineInFile - 1], masterPassword)}");
+
+                            //demande et récupère le nouveau mot de passe
+                            Console.Write("Nouveau mot de passe: ");
+                            string newPassword = Console.ReadLine();
+
+                            //Encrypte le mot de passe
+                            string passwordEncrypted = encryptWithVigenere(newPassword);
+
+                            //change dans la liste l'ancien mot de passe par le nouveau
+                            fileLinesInList[passwordLineInFile - 2] = passwordEncrypted;
+
+                            //Pour écrire dans le fichier
+                            StreamWriter updateLinePassword = new StreamWriter(path);
+
+                            //Ecrit toutes les lignes dans le fichier dont la ligne mise à jour
+                            foreach (string fileLine in fileLinesInList)
+                            {
+                                updateLinePassword.WriteLine(fileLine);
+                            }
+
+                            //Ferme le fichier
+                            updateLinePassword.Close();
                             break;
                         default:
                             break;
                     }
-
-
-
-
-
 
                     /*
                     //Décrypte le login et le stocke
@@ -452,7 +496,58 @@ namespace P_Secu
             //Encrypte le nouveau mot de passe ou login que l'utilisateur souhaite changer
             string encryptWithVigenere(string wordToEncrypt)
             {
-                return "";
+                #region Transforme le mot
+
+                //Mot transformé en lettre
+                string wordTransformed = "";
+
+                //Compteur au cas ou la clef est plus petite que le mot de passe
+                //Pour que le compte reprenne à zero
+                int keyCountToZero = 0;
+
+                //Parcourt le mot de passe et remplace une a une les lettres
+                for (int i = 0; i < wordToEncrypt.Length; i++)
+                {
+                    //Si le compteur pour la clef dépasse le dernier index du tableau
+                    //Remet l'index du compteur à zero, pour recommencer la transformation depuis le début du mot
+                    if (keyCountToZero == masterPassword.Length)
+                    {
+                        keyCountToZero = 0;
+                    }
+
+                    //Ajoute la lettre transformée par la clef dans le mot transformé par la clef
+                    wordTransformed += masterPassword[keyCountToZero];
+
+                    //Incrémente le compteur pour la clef
+                    keyCountToZero++;
+                }
+
+                #endregion
+
+                //Récupère dans un tableau le code ascii de chaque lettre du mot
+                byte[] wordToEncryptInAscii = Encoding.ASCII.GetBytes(wordToEncrypt);
+
+                //Récupère le code ascii de chaque lettre du mot transformé par la clef
+                byte[] wordTransformedInAscii = Encoding.ASCII.GetBytes(wordTransformed);
+
+                #region Encrypte le mot
+                //Mot de passe ou login final encrypté
+                string finalWordEncrypted = "";
+
+                //Encrypte chaque lettre avec le code de Vigenère
+                for (int i = 0; i < wordTransformed.Length; i++)
+                {
+                    //Additionne le code ascii de la lettre du mot de passe ou celle du login et
+                    //du mot de passe ou login transformé de chaque lettre une a une
+                    int letterEncryptedInAscii = (wordTransformedInAscii[i] + wordToEncryptInAscii[i]) % 256;
+
+                    //Converti le code ASCII en lettre et l'ajoute au mot de passe ou login final encrypté
+                    finalWordEncrypted += Convert.ToChar(letterEncryptedInAscii);
+                }
+
+                #endregion
+
+                return finalWordEncrypted;
             }
 
             //Permet de supprimer un mot de passe
