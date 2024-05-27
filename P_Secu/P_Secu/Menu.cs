@@ -34,13 +34,12 @@ namespace P_Secu
         /// </summary>
         public void ShowMenu()
         {
-            
-
-            //Mise en forme du menu 
-            Console.WriteLine("\n********************************");
 
             //Première ligne du menu
             Console.WriteLine(_title);
+
+            //Mise en forme du menu 
+            Console.WriteLine("\n********************************");
 
             //Affichage des options du menu
             for (int i = 0; i < _optionList.Count; i++)
@@ -51,7 +50,7 @@ namespace P_Secu
             }
 
             //Mise en forme du menu 
-            Console.WriteLine("\n********************************");
+            Console.WriteLine("********************************");
         }
 
 

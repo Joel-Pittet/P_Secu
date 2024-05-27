@@ -51,7 +51,7 @@ namespace P_Secu
             optionsMainMenu.Add("Consulter un mot de passe");
             optionsMainMenu.Add("Ajouter un mot de passe");
             optionsMainMenu.Add("Mettre à jour un mot de passe");
-            optionsMainMenu.Add("Supprimer un mot de passe");
+            //optionsMainMenu.Add("Supprimer un mot de passe");
             optionsMainMenu.Add("Quitter le programme");
 
             //Crée le menu principal
@@ -74,7 +74,7 @@ namespace P_Secu
                     //Intro de l'application
                     Console.WriteLine("+-------------------------------+");
                     Console.WriteLine("| Gestionnaire de mots de passe |");
-                    Console.WriteLine("+-------------------------------+");
+                    Console.WriteLine("+-------------------------------+\n");
 
                     //Affiche les options du menu
                     mainMenu.ShowMenu();
@@ -96,6 +96,9 @@ namespace P_Secu
                     {
                         //Affiche un message d'erreur
                         Console.WriteLine("Veuilez entrer le chiffre correspondant à l'option que vous souhaitez. Pressez ENTER pour continuer");
+
+                        selectedOption = 0;
+
                         Console.ReadKey();
 
                     }
@@ -113,18 +116,16 @@ namespace P_Secu
                             UpdatePassword();
                             break;
                         case 4:
-                            DeletePassword();
-                            break;
-                        case 5:
                             ExitApplication();
+                            //DeletePassword();
                             break;
                         default:
+                            mainMenu.ShowMenu();
                             break;
 
                     }
 
-
-                } while (selectedOption == 0 || selectedOption > 5);
+                } while (selectedOption == 0 || selectedOption > optionsMainMenu.Count);
             }
             
             //Affiche les mots de passe de l'application
@@ -206,13 +207,13 @@ namespace P_Secu
                     string passwordDecrypted = DecryptPasswordOrLogin(fileLinesInList[passwordLineInFile - 1], masterPassword);
 
                     //Affiche le mot de passe souhaité
-                    Console.WriteLine($"URL: {fileLinesInList[passwordLineInFile - 3]}");
+                    Console.WriteLine($"\nURL: {fileLinesInList[passwordLineInFile - 3]}");
                     Console.WriteLine($"Login: {loginDecrypted}");
                     Console.WriteLine($"Mot de passe: {passwordDecrypted}");
                         
                 }
 
-                Console.WriteLine("Appuyer sur une touche pour masquer le mot de passe et revenir au menu principal");
+                Console.WriteLine("\nAppuyer sur une touche pour masquer le mot de passe et revenir au menu principal");
                 Console.ReadLine();
 
                 //Ferme le fichier
@@ -358,6 +359,9 @@ namespace P_Secu
                 //Récupère le choix de l'utilisateur
                 selectedOption = Convert.ToInt32(Console.ReadLine());
 
+                //eface la console
+                Console.Clear();
+
                 //Première ligne du site dans le fichier
                 int passwordInFile = selectedOption - 1;
 
@@ -377,12 +381,17 @@ namespace P_Secu
                     int passwordLineInFile = passwordInFile * 4;
 
                     //Demande quelle aspect du mot de passe l'utilisateur souhaite changer
-                    Console.WriteLine("Que souhaitez vous changer ?");
+                    Console.WriteLine("Que souhaitez vous changer ?\n");
 
                     //Affiche les 3 possibilités
+                    Console.WriteLine("*****************************");
                     Console.WriteLine("1) URL");
                     Console.WriteLine("2) Login");
                     Console.WriteLine("3) Mot de passe");
+                    Console.WriteLine("*****************************");
+
+                    //Demande le choix de l'utilisateur
+                    Console.Write("\nVotre choix: ");
 
                     //récupère le choix de l'utilisateur
                     int aspectToUpdate = Convert.ToInt32(Console.ReadLine());
@@ -397,7 +406,7 @@ namespace P_Secu
                             Console.WriteLine($"URL actuel: {fileLinesInList[passwordLineInFile - 3]}");
 
                             //demande et récupère le nouvel URL
-                            Console.Write("Nouvel URL: ");
+                            Console.Write("\nNouvel URL: ");
                             string newURL = Console.ReadLine();
 
                             //change dans la liste l'ancien Url par le nouveau
@@ -421,7 +430,7 @@ namespace P_Secu
                             Console.WriteLine($"Login actuel: {DecryptPasswordOrLogin(fileLinesInList[passwordLineInFile - 2], masterPassword)}");
 
                             //demande et récupère le nouveau login
-                            Console.Write("Nouveau login: ");
+                            Console.Write("\nNouveau login: ");
                             string newLogin = Console.ReadLine();
 
                             //Encrypte le login
@@ -448,7 +457,7 @@ namespace P_Secu
                             Console.WriteLine($"Mot de passe actuel: {DecryptPasswordOrLogin(fileLinesInList[passwordLineInFile - 1], masterPassword)}");
 
                             //demande et récupère le nouveau mot de passe
-                            Console.Write("Nouveau mot de passe: ");
+                            Console.Write("\nNouveau mot de passe: ");
                             string newPassword = Console.ReadLine();
 
                             //Encrypte le mot de passe
@@ -486,7 +495,7 @@ namespace P_Secu
                     Console.WriteLine($"Mot de passe: {passwordDecrypted}");*/
 
                 }
-                Console.WriteLine("Appuyer sur une touche pour masquer le mot de passe et revenir au menu principal");
+                Console.WriteLine("\nAppuyer sur une touche pour masquer le mot de passe et revenir au menu principal");
                 Console.ReadLine();
 
                 //Affiche le menu principal
@@ -524,11 +533,23 @@ namespace P_Secu
 
                 #endregion
 
+                //Tableau pour les code ascii de chaque lettre du mot à encrypté
+                byte[] wordToEncryptInAscii = new byte[wordToEncrypt.Length];
+
                 //Récupère dans un tableau le code ascii de chaque lettre du mot
-                byte[] wordToEncryptInAscii = Encoding.ASCII.GetBytes(wordToEncrypt);
+                for (int i = 0; i < wordToEncrypt.Length; i++)
+                {
+                    wordToEncryptInAscii[i] = Convert.ToByte(wordToEncrypt[i]);
+                }
+
+                //Tableau pour les code ascii de chaque lettre du mot transformé par la clef
+                byte[] wordTransformedInAscii = new byte[wordTransformed.Length];
 
                 //Récupère le code ascii de chaque lettre du mot transformé par la clef
-                byte[] wordTransformedInAscii = Encoding.ASCII.GetBytes(wordTransformed);
+                for (int i = 0; i < wordTransformed.Length; i++)
+                {
+                    wordTransformedInAscii[i] = Convert.ToByte(wordTransformed[i]);
+                }
 
                 #region Encrypte le mot
                 //Mot de passe ou login final encrypté
@@ -539,7 +560,7 @@ namespace P_Secu
                 {
                     //Additionne le code ascii de la lettre du mot de passe ou celle du login et
                     //du mot de passe ou login transformé de chaque lettre une a une
-                    int letterEncryptedInAscii = (wordTransformedInAscii[i] + wordToEncryptInAscii[i]) % 256;
+                    int letterEncryptedInAscii = (wordTransformedInAscii[i] + wordToEncryptInAscii[i] + _TOTAL_CHAR_ANSI) % _TOTAL_CHAR_ANSI;
 
                     //Converti le code ASCII en lettre et l'ajoute au mot de passe ou login final encrypté
                     finalWordEncrypted += Convert.ToChar(letterEncryptedInAscii);
@@ -550,7 +571,7 @@ namespace P_Secu
                 return finalWordEncrypted;
             }
 
-            //Permet de supprimer un mot de passe
+            /*//Permet de supprimer un mot de passe
             void DeletePassword()
             {
                 
@@ -607,7 +628,7 @@ namespace P_Secu
 
                 DrawMenu();
 
-            }
+            }*/
 
             #region Déchiffrement
 
@@ -615,7 +636,7 @@ namespace P_Secu
             /// Décode le mot de passe ou le login encodé
             /// </summary>
             /// <param name="passwordOrLoginEncrypted"></param>
-            /// <param name="masterPassword"></param>
+            /// <param name="masterkeyPassword"></param>
             /// <returns></returns>
             string DecryptPasswordOrLogin(string passwordOrLoginEncrypted, string masterkeyPassword)
             {
@@ -633,7 +654,7 @@ namespace P_Secu
             /// Crée un chaine de caractère de la taille du mot de passe encrypté
             /// </summary>
             /// <param name="passwordOrLoginEncrypted"></param>
-            /// <param name="masterPassword"></param>
+            /// <param name="masterkeyPassword"></param>
             /// <returns></returns>
             string TransformDecryptedPassword(string passwordOrLoginEncrypted, string masterkeyPassword)
             {
@@ -682,7 +703,13 @@ namespace P_Secu
                 }
 
                 //Stocke chaque code Ascii de chaque lettre de la chaine de caractère faite avec la clef
-                byte[] keySizeOfPasswordOrLoginInBytes = Encoding.ASCII.GetBytes(keySizeOfPasswordOrLogin);
+                byte[] keySizeOfPasswordOrLoginInBytes = new byte[keySizeOfPasswordOrLogin.Length];
+
+                //Récupère le code ascii de chaque lettre du mot de passe transformé
+                for (int i = 0; i < keySizeOfPasswordOrLogin.Length; i++)
+                {
+                    keySizeOfPasswordOrLoginInBytes[i] = Convert.ToByte(keySizeOfPasswordOrLogin[i]);
+                }
 
                 //Mot de passe ou login final décrypté
                 string passwordOrLoginDecrypted = "";
@@ -691,7 +718,7 @@ namespace P_Secu
                 for (int i = 0; i < passwordOrLoginEncrypted.Length; i++)
                 {
                     //Récupère le code ascii de la lettre déchiffrée
-                    int letterDecryptedInAscii = (asciiCodeEveryChar[i] - keySizeOfPasswordOrLoginInBytes[i]) % _TOTAL_CHAR_ANSI;
+                    int letterDecryptedInAscii = (asciiCodeEveryChar[i] - keySizeOfPasswordOrLoginInBytes[i] + _TOTAL_CHAR_ANSI) % _TOTAL_CHAR_ANSI;
 
                     //Converti le code ASCII en lettre et l'ajoute au mot de passe ou login final décrypté
                     passwordOrLoginDecrypted += Convert.ToChar(letterDecryptedInAscii);

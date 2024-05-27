@@ -84,7 +84,13 @@ namespace P_Secu
             string passwordTransformed = TransformPasswordOrLoginWithKey(_password, masterPassword);
 
             //Instancie un tableau pour stocker chaque code ASCII de chaque lettre du mot de passe
-            byte[] tabSplitedPassword = Encoding.ASCII.GetBytes(_password);
+            byte[] tabSplitedPassword = new byte[_password.Length];
+
+            //Récupère le code ascii de chaque lettre du mot de passe
+            for (int i = 0; i < _password.Length; i++)
+            {
+                tabSplitedPassword[i] = Convert.ToByte(_password[i]);
+            }
 
             //Encrypte le mot de passe avec Vigenere et récupère le résultat
             string finalPasswordEncryptedWithVigenere = EncryptPasswordorLoginVigenere(passwordTransformed, tabSplitedPassword);
@@ -105,7 +111,12 @@ namespace P_Secu
             string loginTransformed = TransformPasswordOrLoginWithKey(_login, masterPassword);
 
             //Instancie un tableau pour stocker chaque code ASCII de chaque lettre du login
-            byte[] tabSplitedLogin = Encoding.ASCII.GetBytes(_login);
+            byte[] tabSplitedLogin = new byte[_login.Length];
+
+            for (int i = 0; i < _login.Length; i++)
+            {
+                tabSplitedLogin[i] = Convert.ToByte(_login[i]);
+            }
 
             //Encrypte le login avec Vigenere et récupère le résultat
             string finalLoginEncryptedWithVigenere = EncryptPasswordorLoginVigenere(loginTransformed, tabSplitedLogin);
@@ -158,7 +169,13 @@ namespace P_Secu
         public string EncryptPasswordorLoginVigenere(string passwordOrLoginTransformed, byte[] tabSplitedPasswordOrLogin)
         {
             //Traduit le mot de passe ou le Login transformé en code ASCII
-            byte[] passwordOrLoginTransformedInAscii = Encoding.ASCII.GetBytes(passwordOrLoginTransformed);
+            byte[] passwordOrLoginTransformedInAscii = new byte[tabSplitedPasswordOrLogin.Length];
+
+            //Récupère le code ascii de chaque lettre du mot de passe ou du login
+            for (int i = 0; i < passwordOrLoginTransformed.Length; i++)
+            {
+                passwordOrLoginTransformedInAscii[i] = Convert.ToByte(passwordOrLoginTransformed[i]);
+            }
 
             //Mot de passe ou login final encrypté
             string finalEncryptedPasswordOrLogin = "";
@@ -168,7 +185,7 @@ namespace P_Secu
             {
                 //Additionne le code ascii de la lettre du mot de passe ou celle du login et
                 //du mot de passe ou login transformé de chaque lettre une a une
-                int letterEncryptedInAscii = (passwordOrLoginTransformedInAscii[i] + tabSplitedPasswordOrLogin[i]) % _NB_CHAR_IN_ANSI;
+                int letterEncryptedInAscii = (passwordOrLoginTransformedInAscii[i] + tabSplitedPasswordOrLogin[i] + _NB_CHAR_IN_ANSI) % _NB_CHAR_IN_ANSI;
 
                 //Converti le code ASCII en lettre et l'ajoute au mot de passe ou login final encrypté
                 finalEncryptedPasswordOrLogin += Convert.ToChar(letterEncryptedInAscii);
