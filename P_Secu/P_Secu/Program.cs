@@ -16,7 +16,7 @@ namespace P_Secu
             const int _TOTAL_CHAR_ANSI = 256;
 
             //Chemin du fichier texte qui stocke les mots de passes
-            string path = @"c:\Temp\Password.txt";
+            string path = @"..\Password.txt";
 
             //test si le fichier des mots de passe existe ou non
             bool doesFileExists = File.Exists(path);
