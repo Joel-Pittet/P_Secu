@@ -1,8 +1,11 @@
-﻿using System;
+﻿///Auteur: Joël Pittet
+///Date: 31.05.2024
+///Lieu: Lausanne - ETML
+///Description: Cette classe contient une méthode pour afficher le menu ainsi qu'une liste qui stocke les options du menu
+///             Le menu est également utilisé pour les sous menus du programme
+///
+using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace P_Secu
 {
@@ -52,10 +55,6 @@ namespace P_Secu
             //Mise en forme du menu 
             Console.WriteLine("********************************");
         }
-
-
-
-
 
     }
 }

@@ -3,12 +3,8 @@
 ///Lieu: Lausanne - ETML
 ///Description: Cette classe contient des attributs et des méthode pour gérer les site entré dans le gestionnaire
 ///             il y a des attributs comme l'url, le login ou le mot de passe du site
-///             Il y a une methode qui permet d'encrypté le mot de passe et le login
+///             Il y a plusieurs methodes qui permettent l'encryptage Vigenère
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace P_Secu
 {

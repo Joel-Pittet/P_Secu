@@ -1,9 +1,13 @@
-﻿using System;
+﻿///Auteur: Joël Pittet
+///Date: 31.05.2024
+///Lieu: Lausanne - ETML
+///Description: Ce programme permet de stocker des informations sur des mots de passe comme l'url, le nom du site, le login et le mot de passe. 
+///             Le mot de passe et le login sont stocké dans un fichier texte.
+///             Il est aussi possible de consulter ses informations et de les mettre à jour
+///             Cela fonctionne comme un gestionnaire de mot de passe
+///
+using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 using System.IO;
 
 namespace P_Secu
